@@ -1,0 +1,17 @@
+export const LEGEND_COLORS = {
+  pertanian_lahan_kering_campur: "#a8ddb5",
+  tambak: "#2b8cbe",
+  belukar_rawa: "#7bccc4",
+  tanah_terbuka: "#cccccc",
+  hutan_mangrove_sekunder: "#006d2c",
+  hutan_tanaman: "#238b45",
+  hutan_rawa_primer: "#00441b",
+  hutan_lahan_kering_sekunder: "#41ab5d",
+  belukar: "#74c476",
+  perkebunan: "#bae4b3",
+  pemukiman: "#fb6a4a",
+  sawah: "#c7e9c0",
+  transmigrasi: "#feb24c",
+  pertambangan: "#8c510a",
+  bandara___pelabuhan: "#08519c",
+};
