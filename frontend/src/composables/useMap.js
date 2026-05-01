@@ -43,13 +43,6 @@ export function useMap(targetId) {
   const lastGeoJSON = ref(null);
 
   const filterStore = useMapFilterStore();
-  // 🎨 Style
-  // const getColor = (type) => {
-  //   if (type === "Hutan") return "green";
-  //   if (type === "Tambak") return "blue";
-  //   if (type === "Tanah Terbuka") return "gray";
-  //   return "orange";
-  // };
 
   const styleFunction = (feature) => {
     const features = feature.get("features");
@@ -141,7 +134,7 @@ export function useMap(targetId) {
         attribution: false,
         zoom: true,
         rotate: false,
-      }).extend([]), // remove default controls
+      }).extend([]),
       target: targetId,
       layers: [
         osmLayer,
@@ -170,28 +163,6 @@ export function useMap(targetId) {
   };
 
   // 📡 Load GeoJSON from API
-  /*
-  const loadData = async () => {
-    // const extent = map.getView().calculateExtent();
-    // const geojson = await fetchGeoJSON(extent, currentFilters)
-    const geojson = await fetchGeoJSON({
-      // extent,
-      ...currentFilters,
-      legenda: activeLayers.join(","),
-    });
-
-    // 🛡️ prevent crash
-    if (!geojson || !geojson.features) return;
-
-    vectorSource.clear();
-    vectorSource.addFeatures(
-      new GeoJSON().readFeatures(geojson, {
-        featureProjection: "EPSG:3857",
-      }),
-    );
-  };
-  */
-
   const loadData = async () => {
     const geojson = await fetchGeoJSON({
       kabupaten_id: filterStore.kabupaten_id,
@@ -201,14 +172,9 @@ export function useMap(targetId) {
     });
 
     lastGeoJSON.value = geojson;
-    /*
-    console.log("FILTER STORE:", {
-      kabupaten_id: filterStore.kabupaten_id,
-      kecamatan_id: filterStore.kecamatan_id,
-      desa_id: filterStore.desa_id,
-      legenda: filterStore.legenda,
-    });
-    */
+
+    // Update store with latest GeoJSON for charts
+    filterStore.setGeoJSON(geojson);
     if (!geojson?.features) return;
 
     vectorSource.clear();
@@ -217,6 +183,8 @@ export function useMap(targetId) {
         featureProjection: "EPSG:3857",
       }),
     );
+
+    return geojson;
   };
 
   const setBaseMap = (type) => {

@@ -9,6 +9,10 @@ const filterStore = useMapFilterStore();
 
 const emit = defineEmits(['filter-change', 'layer-change'])
 
+const props = defineProps({
+  lastGeoJSON: Object
+});
+
 // 🎯 Emit filter
 const emitFilters = () => {
   emit('filter-change', {
@@ -22,20 +26,16 @@ const kabupatenList = ref([])
 const kecamatanList = ref([])
 const desaList = ref([])
 
-// const selectedKabupaten = ref(null)
-// const selectedKecamatan = ref(null)
-// const selectedDesa = ref(null)
-
 // 🔽 Spatial filters
 const kabupaten = ref([])
 const kecamatan = ref([])
 const desa = ref([])
 
-// const selectedKabupaten = ref('')
 const selectedKabupaten = computed({
   get: () => filterStore.kabupaten_id,
   set: (val) => filterStore.setKabupaten(val),
 });
+
 const selectedKecamatan = computed({
   get: () => filterStore.kecamatan_id,
   set: (val) => filterStore.setKecamatan(val),
@@ -65,13 +65,6 @@ const layers = ref([
   { name: 'Bandara / Pelabuhan', value: 'Bandara / Pelabuhan', color: '#08519c', checked: true }
 ])
 
-// 📡 Load kabupaten
-// const loadKabupaten = async () => {
-//   const res = await axios.get('/api/kabupaten')
-//   kabupaten.value = res.data
-// }
-// loadKabupaten()
-
 onMounted(async () => {
   kabupatenList.value = await getKabupaten()
 })
@@ -81,11 +74,8 @@ watch(selectedKabupaten, async (val) => {
   if (!val) return
 
   const res = await getKecamatan(val)
-  // kecamatanList.value = await res.json()
   kecamatanList.value = res
   
-  // selectedKecamatan.value = res.length ? res[0].name : ''
-  // selectedKecamatan.value = null
   desaList.value = []
 })
 
@@ -95,29 +85,8 @@ watch(selectedKecamatan, async (val) => {
   const res = await getDesa(val)
   desaList.value = await res
 
-  // selectedDesa.value = null
 })
 
-// watch(selectedDesa, emitFilters)
-/*
-watch([selectedKabupaten, selectedKecamatan, selectedDesa], () => {
-  emit('filter-change', {
-    kabupaten: selectedKabupaten.value,
-    kecamatan: selectedKecamatan.value,
-    desa: selectedDesa.value
-  })
-})
-
-watch([selectedKabupaten, selectedKecamatan, selectedDesa], async () => {
-  const geojson = await getBoundary({
-    kabupaten: selectedKabupaten.value,
-    kecamatan: selectedKecamatan.value,
-    desa: selectedDesa.value
-  })
-
-  emit('highlight-boundary', geojson)
-})
-*/
 watch(
   [selectedKabupaten, selectedKecamatan, selectedDesa],
   async () => {
@@ -132,12 +101,8 @@ watch(
 
       if (!payload.kabupaten && !payload.kecamatan && !payload.desa) return;
 
-      console.log("CALLING getBoundary", payload);
-
       const geojson = await getBoundary(payload);
-
-      console.log("BOUNDARY RESULT", geojson);
-
+      
       emit("highlight-boundary", geojson);
     } catch (err) {
       console.error("getBoundary failed:", err);
@@ -163,27 +128,11 @@ const toggleAll = () => {
     : [];
 };
 
-// 🎛 Emit layer selection
-/*
-watch(layers, () => {
-  const allChecked = layers.value.every(l => l.checked)
-  selectAll.value = allChecked
-
-  const active = selectAll.value
-    ? layers.value.map(l => l.value)
-    : layers.value.filter(l => l.checked).map(l => l.value)
-
-  console.log('EMIT LAYERS:', active) // 🔥 DEBUG
-
-  emit('layer-change', active)
-}, { deep: true, immediate: true })
-*/
 const activeLayers = computed(() =>
   layers.value.filter(l => l.checked).map(l => l.value)
 )
 
 watch(activeLayers, (val) => {
-  // console.log('EMIT LAYERS:', val)
   emit('layer-change', val)
 }, { immediate: true })
 

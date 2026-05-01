@@ -6,6 +6,7 @@ export const useMapFilterStore = defineStore("mapFilter", {
     kecamatan_id: "",
     desa_id: "",
     legenda: [],
+    lastGeoJSON: null, // 🗺️ Store last GeoJSON for charts
   }),
 
   actions: {
@@ -26,6 +27,10 @@ export const useMapFilterStore = defineStore("mapFilter", {
 
     setLegenda(val) {
       this.legenda = val;
+    },
+
+    setGeoJSON(geojson) {
+      this.lastGeoJSON = geojson;
     },
   },
 });

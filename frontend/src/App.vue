@@ -32,10 +32,10 @@ const onHighlight = (geojson) => {
 <template>
   <div class="layout">
     <Sidebar 
-  @filter-change="onFilterChange"
-  @layer-change="onLayerChange"
-  @highlight-boundary="onHighlight"
-/>
+      @filter-change="onFilterChange"
+      @layer-change="onLayerChange"
+      @highlight-boundary="onHighlight"
+    />
     
     <div class="map-container">
       <MapView ref="mapRef" />

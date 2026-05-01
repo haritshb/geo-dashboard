@@ -1,34 +1,51 @@
 <template>
-  <div class="chart-panel">
-    <h3 class="title">Chart Area</h3>
+  <div class="chart-container">
+    <canvas ref="chartRef"></canvas>
 
-    <div v-if="loading" class="loading">Loading...</div>
-    <div v-else-if="!hasData" class="empty">No data</div>
-
-    <canvas v-show="hasData" ref="chartRef"></canvas>
+    <div v-if="isEmpty" class="overlay">
+      No data available
+    </div>
   </div>
 </template>
 
-<script setup>
-import { ref, watch, computed, onMounted, onBeforeUnmount } from "vue";
+<<script setup>
+import { ref, onMounted, watch } from "vue";
 import Chart from "chart.js/auto";
+
 import { useMapFilterStore } from "../stores/mapFilter";
-import { useMap } from "../composables/useMap";
-const { lastGeoJSON } = useMap();
-
-// 👉 adjust if your API path is different
-import { fetchGeoJSON } from '../services/api'
-
 const filterStore = useMapFilterStore();
 
 const chartRef = ref(null);
 let chartInstance = null;
+const isEmpty = ref(false);
 
-const loading = ref(false);
-const stats = ref({});
+// ✅ Create chart ONCE
+onMounted(() => {
+  chartInstance = new Chart(chartRef.value, {
+    type: "pie",
+    data: {
+      labels: [],
+      datasets: [
+        {
+          data: [],
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      animation: {
+        duration: 500,
+        easing: "easeOutQuart",
+      },
+      plugins: {
+        legend: {
+          position: "bottom",
+        },
+      },
+    },
+  });
+});
 
-// OPTIONAL: if you want consistent colors with your layers
-// you can also import from a shared file instead
 const layerColors = {
   "Pertanian Lahan Kering Campur": "#a8ddb5",
   "Tambak": "#2b8cbe",
@@ -46,11 +63,6 @@ const layerColors = {
   "Pertambangan": "#8c510a",
   "Bandara / Pelabuhan": "#08519c",
 };
-
-// =========================
-// Helpers
-// =========================
-const hasData = computed(() => Object.keys(stats.value).length > 0);
 
 const buildLegendStats = (features) => {
   const counts = {};
@@ -100,75 +112,48 @@ const renderChart = () => {
   });
 };
 
-// =========================
-// Load data
-// =========================
-const loadChartData = async () => {
-  const params = {
-    kabupaten_id: filterStore.kabupaten_id,
-    kecamatan_id: filterStore.kecamatan_id,
-    desa_id: filterStore.desa_id,
+function updateChart(features) {
+  isEmpty.value = false;
+
+  const stats = buildLegendStats(features);
+
+  const labels = Object.keys(stats);
+  const values = Object.values(stats);
+
+  chartInstance.data.labels = labels;
+  chartInstance.data.datasets[0] = {
+    data: values,
+    backgroundColor: labels.map(l => layerColors[l] || "#ccc")
   };
 
-  if (filterStore.legenda.length > 0) {
-    params.legenda = filterStore.legenda.join(",");
-  }
+  chartInstance.update();
+}
 
-  // console.log("CHART PARAMS:", params);
-
-  const geojson = await fetchGeoJSON(params);
-
-  // console.log("RAW GEOJSON:", geojson);
-  // console.log("FEATURES:", geojson?.features?.length);
-
-  if (!geojson || !geojson.features || geojson.features.length === 0) {
-    console.warn("NO FEATURES FOR CHART");
-    stats.value = {};
-    return;
-  }
-
-  stats.value = buildLegendStats(geojson.features);
-
-  // console.log("STATS:", stats.value);
-
-  renderChart();
-};
-
-// =========================
-// Reactive watch (MAIN DRIVER)
-// =========================
 watch(
-  () => ({
-    kabupaten_id: filterStore.kabupaten_id,
-    kecamatan_id: filterStore.kecamatan_id,
-    desa_id: filterStore.desa_id,
-    legenda: filterStore.legenda,
-  }),
-  () => {
-    loadChartData();
+  () => filterStore.lastGeoJSON,
+  (geojson) => {
+    if (!geojson) return;
+
+    const features = geojson.features || [];
+
+    if (!features.length) {
+      updateEmpty();
+      return;
+    }
+
+    updateChart(features);
   },
-  { deep: true, immediate: true }
+  { immediate: true }
 );
 
-watch(lastGeoJSON, (geojson) => {
-  if (!geojson?.features?.length) {
-    stats.value = {};
-    return;
-  }
-  console.log("GeoJSON changed, updating chart stats...");
-  stats.value = buildLegendStats(geojson.features);
-  renderChart();
-  // loadChartData();
-});
+function updateEmpty() {
+  isEmpty.value = true;
 
-// =========================
-// Cleanup
-// =========================
-onBeforeUnmount(() => {
-  if (chartInstance) {
-    chartInstance.destroy();
-  }
-});
+  chartInstance.data.labels = ["No Data"];
+  chartInstance.data.datasets[0].data = [1];
+
+  chartInstance.update();
+}
 </script>
 
 <style scoped>
@@ -189,5 +174,21 @@ onBeforeUnmount(() => {
   color: #888;
   text-align: center;
   margin-top: 10px;
+}
+
+.chart-container {
+  position: relative;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #666;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(2px);
 }
 </style>

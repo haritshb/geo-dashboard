@@ -94,9 +94,6 @@ router.get("/boundary", async (req, res) => {
     values,
   );
 
-  console.log("conditions:", conditions);
-  console.log("values:", values);
-
   res.json(result.rows[0].geojson);
 });
 
