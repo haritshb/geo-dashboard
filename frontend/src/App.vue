@@ -29,7 +29,7 @@ const onHighlight = (geojson) => {
 }
 </script>
 
-<template>
+<!-- <template>
   <div class="layout">
     <Sidebar 
       @filter-change="onFilterChange"
@@ -41,6 +41,10 @@ const onHighlight = (geojson) => {
       <MapView ref="mapRef" />
     </div>
   </div>
+</template> -->
+
+<template>
+  <router-view />
 </template>
 
 <style>

@@ -2,7 +2,9 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../db");
 
-router.get("/kabupaten", async (req, res) => {
+const auth = require("../middleware/auth");
+
+router.get("/kabupaten", auth, async (req, res) => {
   const result = await pool.query(`
     SELECT kdpkab AS id, wadmkk AS name
     FROM desa_kalimantan
@@ -14,7 +16,7 @@ router.get("/kabupaten", async (req, res) => {
   res.json(result.rows);
 });
 
-router.get("/kecamatan", async (req, res) => {
+router.get("/kecamatan", auth, async (req, res) => {
   const { kabupaten } = req.query;
 
   const result = await pool.query(
@@ -31,7 +33,7 @@ router.get("/kecamatan", async (req, res) => {
   res.json(result.rows);
 });
 
-router.get("/desa", async (req, res) => {
+router.get("/desa", auth, async (req, res) => {
   const { kecamatan } = req.query;
 
   const result = await pool.query(
@@ -97,7 +99,7 @@ router.get("/boundary", async (req, res) => {
   res.json(result.rows[0].geojson);
 });
 
-router.get("/geojson", async (req, res) => {
+router.get("/geojson", auth, async (req, res) => {
   try {
     const { kabupaten_id, kecamatan_id, desa_id, legenda } = req.query;
 
