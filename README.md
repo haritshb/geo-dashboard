@@ -1,62 +1,315 @@
 ﻿# 🌍 Geo Dashboard
 
-A fullstack geospatial dashboard application for visualizing and managing geographic data such as polygons, entities, and administrative boundaries.
+A full-stack geospatial dashboard application for visualizing and managing geographic data such as polygons, entities, and administrative boundaries.
 
-This project consists of:
+This project demonstrates modern web development practices including JWT authentication, RESTful APIs, PostgreSQL/PostGIS integration, and interactive GIS visualization using OpenLayers.
 
-* **Frontend**: Interactive map UI (likely using Vue + OpenLayers/Leaflet)
-* **Backend**: API service for geospatial data (e.g. PostgreSQL/PostGIS)
+![Vue](https://img.shields.io/badge/Vue-3.x-42b883)
+![Vite](https://img.shields.io/badge/Vite-Frontend-646cff)
+![Node.js](https://img.shields.io/badge/Node.js-Express-339933)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-336791)
+![PostGIS](https://img.shields.io/badge/PostGIS-Spatial-blue)
+![JWT](https://img.shields.io/badge/Auth-JWT-orange)
+![OpenLayers](https://img.shields.io/badge/OpenLayers-Map-red)
 
 ---
+
+## 📸 Screenshots
+
+| Login Page                        | Dashboard                        |
+| --------------------------------- | -------------------------------- |
+| ![](./screenshots/login-page.png) | ![](./screenshots/dashboard.png) |
+
+### Boundary Highlight
+
+![](./screenshots/boundary-highlight.png)
+
+---
+
+## ⭐ Key Highlights
+
+- Built with Vue 3, OpenLayers, Express.js, PostgreSQL, and PostGIS
+- Implemented JWT authentication and protected routes
+- Developed REST APIs for geospatial data retrieval
+- Visualized GeoJSON polygons and administrative boundaries
+- Integrated spatial queries using PostGIS
 
 ## 🚀 Features
 
-* Display map with polygon boundaries
-* Entity visualization & filtering
-* Auto zoom & highlight selected areas
-* Integration with geospatial APIs
-* Dynamic data loading from backend
+### 🔐 Authentication & Security
+
+- JWT-based authentication
+- Protected API endpoints
+- User login/logout functionality
+- Persistent session using Local Storage
+- Route protection using Vue Router Guards
+- Password hashing with bcrypt
+
+### 🗺️ Geospatial Visualization
+
+- Interactive map powered by OpenLayers
+- Polygon and administrative boundary rendering
+- GeoJSON integration
+- Boundary highlighting and auto zoom
+- Dynamic map layer management
+- Spatial visualization from PostGIS data
+
+### 📊 Data Management
+
+- Filter by Kabupaten
+- Filter by Kecamatan
+- Filter by Desa
+- Dynamic data loading
+- Real-time API integration
+- Spatial data retrieval from PostgreSQL/PostGIS
+
+### 🎨 Dashboard
+
+- Responsive dashboard layout
+- User profile dropdown menu
+- Authentication-aware navigation
+- Vue 3 Composition API
+- State management with Pinia
 
 ---
 
-## 🏗️ Project Structure
+## 💡 Skills Demonstrated
 
+This project showcases:
+
+- Full Stack Development
+- REST API Development
+- JWT Authentication
+- PostgreSQL & PostGIS
+- Vue 3 Composition API
+- State Management with Pinia
+- API Integration with Axios
+- OpenLayers GIS Visualization
+- Geospatial Data Processing
+- Database Design
+- Client-Server Architecture
+
+---
+
+## 🏗️ Architecture
+
+```text
+Frontend (Vue 3 + Vite + OpenLayers)
+                │
+                ▼
+      REST API (Express.js)
+                │
+                ▼
+     PostgreSQL + PostGIS
 ```
+
+---
+
+## 🗂️ Project Structure
+
+```text
 geo-dashboard/
 │
-├── backend/     # API & database logic
-├── frontend/    # UI (map + dashboard)
+├── backend/
+│   ├── middleware/
+│   ├── routes/
+│   ├── controllers/
+│   ├── db/
+│   ├── utils/
+│   └── server.js
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── views/
+│   │   ├── router/
+│   │   ├── stores/
+│   │   ├── services/
+│   │   └── assets/
+│   │
+│   └── vite.config.js
+│
+├── screenshots/
+│
 └── README.md
+```
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+
+- Vue 3
+- Vite
+- OpenLayers
+- Vue Router
+- Pinia
+- Axios
+
+### Backend
+
+- Node.js
+- Express.js
+- JWT Authentication
+- bcrypt
+- dotenv
+
+### Database
+
+- PostgreSQL
+- PostGIS
+
+---
+
+## 🗄️ Database
+
+### Authentication
+
+```text
+users
+├── id
+├── username
+└── password
+```
+
+### Geospatial Data
+
+```text
+desa_kalimantan
+├── geometry
+├── kabupaten
+├── kecamatan
+├── desa
+└── additional attributes
+```
+
+---
+
+## 🔐 Authentication API
+
+### Login
+
+```http
+POST /api/v1/auth/login
+```
+
+Request
+
+```json
+{
+  "username": "admin",
+  "password": "admin123"
+}
+```
+
+Response
+
+```json
+{
+  "token": "jwt_token_here",
+  "user": {
+    "id": 1,
+    "username": "admin"
+  }
+}
+```
+
+### Register
+
+```http
+POST /api/v1/auth/register
+```
+
+Request
+
+```json
+{
+  "username": "newuser",
+  "password": "password123"
+}
+```
+
+---
+
+## 🌐 Geospatial API
+
+### Get GeoJSON Data
+
+```http
+GET /api/v1/geo/geojson
+```
+
+### Get Kabupaten
+
+```http
+GET /api/v1/geo/kabupaten
+```
+
+### Get Kecamatan
+
+```http
+GET /api/v1/geo/kecamatan?kabupaten=XXX
+```
+
+### Get Desa
+
+```http
+GET /api/v1/geo/desa?kecamatan=YYY
+```
+
+### Get Boundary
+
+```http
+GET /api/v1/geo/boundary
+```
+
+---
+
+## 🔒 Protected Routes
+
+Protected endpoints require:
+
+```http
+Authorization: Bearer <token>
+```
+
+Example:
+
+```http
+Authorization: Bearer eyJhbGciOiJIUzI1Ni...
 ```
 
 ---
 
 ## ⚙️ Installation
 
-### 1. Clone Repository
+### Clone Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/geo-dashboard.git
+git clone https://github.com/haritshb/geo-dashboard.git
 cd geo-dashboard
 ```
 
----
-
-### 2. Backend Setup
+### Backend Setup
 
 ```bash
 cd backend
 npm install
 ```
 
-Create `.env` file:
+Create `.env`
 
-```
+```env
+PORT=3000
+
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=your_db
-DB_USER=your_user
+DB_NAME=your_database
+DB_USER=postgres
 DB_PASSWORD=your_password
+
+JWT_SECRET=your_secret_key
 ```
 
 Run backend:
@@ -65,9 +318,15 @@ Run backend:
 npm run dev
 ```
 
+Backend URL:
+
+```text
+http://localhost:3000
+```
+
 ---
 
-### 3. Frontend Setup
+### Frontend Setup
 
 ```bash
 cd frontend
@@ -75,87 +334,47 @@ npm install
 npm run dev
 ```
 
-App will run on:
+Frontend URL:
 
-```
+```text
 http://localhost:5173
 ```
 
 ---
 
-## 🗺️ Tech Stack
+## 🚀 Future Improvements
 
-* Frontend: Vue.js / Vite / OpenLayers or Leaflet
-* Backend: Node.js / Express
-* Database: PostgreSQL + PostGIS
-
----
-
-## 🔌 API Example
-
-```
-GET /api/boundary?kabupaten=XXX&kecamatan=YYY
-```
-
-Returns GeoJSON data used for map rendering.
-
----
-
-## 🚀 Deployment Guide
-
-### Backend Deployment
-
-1. Setup server (Ubuntu / VPS)
-2. Install Node.js & PM2
-3. Run:
-
-```bash
-npm install
-pm2 start app.js
-```
-
-4. Setup reverse proxy (NGINX)
-
----
-
-### Frontend Deployment
-
-Build project:
-
-```bash
-npm run build
-```
-
-Output:
-
-```
-dist/
-```
-
-Deploy using:
-
-* Nginx
-* Vercel
-* Netlify
-
----
-
-## 🌐 Environment Notes
-
-* Ensure PostGIS is enabled in PostgreSQL
-* Make sure CORS is configured in backend
-* Update API base URL in frontend for production
+- Role-Based Access Control (RBAC)
+- Admin Dashboard
+- Refresh Token Authentication
+- Docker & Docker Compose Support
+- GIS Layer Management
+- Export Map as PNG/PDF
+- GitHub Actions CI/CD Pipeline
+- Automated Testing
+- Audit Logging
 
 ---
 
 ## 👨‍💻 Author
 
-Harits Hamid Balfas
+**Harits Hamid Balfas**
+
+Software Engineer | Full Stack Developer
+
+GitHub:
+https://github.com/haritshb
 
 ---
 
-## 📌 Notes
+## 📌 Purpose
 
-This project is designed for geospatial visualization and may require proper GIS data sources such as shapefiles or GeoJSON.
+This project was built to demonstrate practical experience in:
 
----
+- Vue.js Frontend Development
+- OpenLayers GIS Visualization
+- Express.js Backend Development
+- PostgreSQL/PostGIS Geospatial Databases
+- JWT Authentication & Authorization
+- REST API Design
+- Full Stack Application Architecture
